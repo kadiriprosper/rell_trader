@@ -18,6 +18,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   bool hasData = false;
   TradeModel? currentTrade;
+  List<SignalCardWidget> tradingSignals = [];
   final channel = WebSocketChannel.connect(
     Uri.parse('ws://81.0.249.14:80/ws/check/free'),
   );
@@ -132,20 +133,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   print({'Current Status': 'False'});
                 } else {
                   print(snapshot.data);
-                  
+
                   if (jsonDecode(snapshot.data)['status'] == true) {
                     currentTrade = TradeModel.fromMap(
                       jsonDecode(snapshot.data),
                     );
+                    tradingSignals.removeAt(0);
+                    tradingSignals.add(
+                      SignalCardWidget(
+                        tradingPair: tradingPair.first,
+                        condition: currentTrade!.condition,
+                        rsi: currentTrade!.rsi.toStringAsFixed(2),
+                        sma: currentTrade!.sl.toStringAsFixed(2),
+                        tp: currentTrade!.tp.toStringAsFixed(2),
+                        currentPrice:
+                            currentTrade!.currentPrice.toStringAsFixed(2),
+                      ),
+                    );
                   }
                   hasData = true;
-                  return SignalCardWidget(
-                    tradingPair: tradingPair.first,
-                    condition: currentTrade!.condition,
-                    rsi: currentTrade!.rsi.toStringAsFixed(2),
-                    sma: currentTrade!.sl.toStringAsFixed(2),
-                    tp: currentTrade!.tp.toStringAsFixed(2),
-                    currentPrice: currentTrade!.currentPrice.toStringAsFixed(2),
+                  return ListView.builder(
+                    itemCount: 2,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return tradingSignals[index];
+                    },
                   );
                 }
                 //   return SignalCardWidget(
@@ -157,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 //     expiration: '10mins',
                 //   );
               }
-              
+
               return const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -181,25 +193,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
           const SizedBox(height: 20),
-          // const SizedBox(height: 12),
-          // SignalCardWidget(
-          //   lotSize: '0.01',
-          //   tradingPair: 'XAUUSD',
-          //   openPrice: '1.0234',
-          //   stopLoss: '1.08204',
-          //   takeProfit: '1.082084',
-          //   expiration: '10mins',
-          // ),
-          // const SizedBox(height: 12),
-          // SignalCardWidget(
-          //   lotSize: '0.01',
-          //   tradingPair: 'XAUUSD',
-          //   openPrice: '1.0234',
-          //   stopLoss: '1.08204',
-          //   takeProfit: '1.082084',
-          //   expiration: '10mins',
-          // ),
-          // const SizedBox(height: 16),
           const Spacer(),
           Container(
             padding: const EdgeInsets.all(20).copyWith(bottom: 10, left: 14),
@@ -327,26 +320,26 @@ class SignalCardWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    text: 'Lot size: ',
-                    children: [
-                      TextSpan(
-                        text: rsi,
-                        style: const TextStyle(
-                          color: Colors.green,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
+                // RichText(
+                //   text: TextSpan(
+                //     style: const TextStyle(
+                //       color: Colors.grey,
+                //       fontSize: 12,
+                //       fontWeight: FontWeight.w500,
+                //     ),
+                //     text: 'Lot size: ',
+                //     children: [
+                //       TextSpan(
+                //         text: rsi,
+                //         style: const TextStyle(
+                //           color: Colors.green,
+                //           fontSize: 12,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // const Spacer(),
                 RichText(
                   text: TextSpan(
                     style: const TextStyle(
@@ -357,7 +350,7 @@ class SignalCardWidget extends StatelessWidget {
                     text: 'Condition Met: ',
                     children: [
                       TextSpan(
-                        text: condition.toString(),
+                        text: condition == TradeCondition.buy ? 'BUY' : 'SELL',
                         style: TextStyle(
                           color: condition == TradeCondition.buy
                               ? Colors.green
@@ -399,11 +392,11 @@ class SignalCardWidget extends StatelessWidget {
             //   size: takeProfit,
             //   isHigher: true,
             // ),
-            const SizedBox(height: 10),
-            const SymbolRowWidget(
-              label: 'Expiration',
-              size: '60 secs',
-            ),
+            // const SizedBox(height: 10),
+            // const SymbolRowWidget(
+            //   label: 'Expiration',
+            //   size: '60 secs',
+            // ),
           ],
         ),
       ),

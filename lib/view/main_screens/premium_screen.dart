@@ -18,9 +18,24 @@ class PremiumScreen extends StatefulWidget {
 
 class _PremiumScreenState extends State<PremiumScreen> {
   TradeController tradeController = Get.put(TradeController());
+  bool hasData = false;
+  TradeModel? currentTrade;
   final channel = WebSocketChannel.connect(
     Uri.parse('ws://81.0.249.14:80/ws/check/premium'),
   );
+
+  @override
+  void initState() {
+    channel.sink.add(jsonEncode({"msg": "ping"}));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,27 +83,27 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 StreamBuilder(
                   stream: channel.stream,
                   builder: (context, snapshot) {
-                    channel.sink.add(jsonEncode({"msg": "ping"}));
-
                     if (snapshot.hasData) {
-                      if (jsonDecode(snapshot.data)['status'] == false) {
-                        print({'Current Status': 'False'});
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                      if (jsonDecode(snapshot.data)['status'] == false &&
+                          !hasData) {
+                        print({'Current Status': 'False from premium screen'});
                       } else {
                         print(snapshot.data);
-                        TradeModel currentTrade = TradeModel.fromMap(
-                          jsonDecode(snapshot.data),
-                        );
+
+                        if (jsonDecode(snapshot.data)['status'] == true) {
+                          currentTrade = TradeModel.fromMap(
+                            jsonDecode(snapshot.data),
+                          );
+                        }
+                        hasData = true;
                         return SignalCardWidget(
                           tradingPair: tradingPair.first,
-                          condition: currentTrade.condition,
-                          rsi: currentTrade.rsi.toStringAsFixed(2),
-                          sma: currentTrade.sl.toStringAsFixed(2),
-                          tp: currentTrade.tp.toStringAsFixed(2),
+                          condition: currentTrade!.condition,
+                          rsi: currentTrade!.rsi.toStringAsFixed(2),
+                          sma: currentTrade!.sl.toStringAsFixed(2),
+                          tp: currentTrade!.tp.toStringAsFixed(2),
                           currentPrice:
-                              currentTrade.currentPrice.toStringAsFixed(2),
+                              currentTrade!.currentPrice.toStringAsFixed(2),
                         );
                       }
                       //   return SignalCardWidget(
@@ -99,12 +114,28 @@ class _PremiumScreenState extends State<PremiumScreen> {
                       //     takeProfit: '1.082084',
                       //     expiration: '10mins',
                       //   );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
                     }
-                    return const SizedBox();
+
+                    return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: Colors.green,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 10,
+                        ),
+                        Text(
+                          'Checking Market Conditions',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.lightGreen,
+                          ),
+                        ),
+                      ],
+                    );
                   },
                 ),
                 const SizedBox(height: 20),
