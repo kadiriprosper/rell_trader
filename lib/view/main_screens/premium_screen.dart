@@ -85,7 +85,8 @@ class _PremiumScreenState extends State<PremiumScreen> {
                           tradingPair: tradingPair.first,
                           condition: currentTrade.condition,
                           rsi: currentTrade.rsi.toStringAsFixed(2),
-                          sma: currentTrade.sma.toStringAsFixed(2),
+                          sma: currentTrade.sl.toStringAsFixed(2),
+                          tp: currentTrade.tp.toStringAsFixed(2),
                           currentPrice:
                               currentTrade.currentPrice.toStringAsFixed(2),
                         );

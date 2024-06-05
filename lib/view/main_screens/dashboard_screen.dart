@@ -16,9 +16,17 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  bool hasData = false;
+  TradeModel? currentTrade;
   final channel = WebSocketChannel.connect(
     Uri.parse('ws://81.0.249.14:80/ws/check/free'),
   );
+
+  @override
+  void initState() {
+    channel.sink.add(jsonEncode({"msg": "ping"}));
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -53,18 +61,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                const Text(
-                  'Fund account for trading',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
+                // const Text(
+                //   'Fund account for trading',
+                //   style: TextStyle(
+                //     fontSize: 14,
+                //     color: Colors.white,
+                //   ),
+                // ),
                 const SizedBox(height: 16),
                 CustomMainScreenButton(
                   buttonColor: Colors.white,
                   buttonTextColor: const Color.fromARGB(255, 24, 111, 27),
-                  label: 'Invest Today',
+                  label: 'Get funding for trading',
                   onPressed: () {},
                 ),
               ],
@@ -114,25 +122,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
           StreamBuilder(
             stream: channel.stream,
             builder: (context, snapshot) {
-              channel.sink.add(jsonEncode({"msg": "ping"}));
+              // Future.delayed(
+              //   const Duration(minutes: 1),
+              //   () => channel.sink.add(jsonEncode({"msg": "ping"})),
+              // );
 
               if (snapshot.hasData) {
-                if (jsonDecode(snapshot.data)['status'] == false) {
+                if (jsonDecode(snapshot.data)['status'] == false && !hasData) {
                   print({'Current Status': 'False'});
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
                 } else {
                   print(snapshot.data);
-                  TradeModel currentTrade = TradeModel.fromMap(
-                    jsonDecode(snapshot.data),
-                  );
+                  
+                  if (jsonDecode(snapshot.data)['status'] == true) {
+                    currentTrade = TradeModel.fromMap(
+                      jsonDecode(snapshot.data),
+                    );
+                  }
+                  hasData = true;
                   return SignalCardWidget(
                     tradingPair: tradingPair.first,
-                    condition: currentTrade.condition,
-                    rsi: currentTrade.rsi.toStringAsFixed(2),
-                    sma: currentTrade.sma.toStringAsFixed(2),
-                    currentPrice: currentTrade.currentPrice.toStringAsFixed(2),
+                    condition: currentTrade!.condition,
+                    rsi: currentTrade!.rsi.toStringAsFixed(2),
+                    sma: currentTrade!.sl.toStringAsFixed(2),
+                    tp: currentTrade!.tp.toStringAsFixed(2),
+                    currentPrice: currentTrade!.currentPrice.toStringAsFixed(2),
                   );
                 }
                 //   return SignalCardWidget(
@@ -143,12 +156,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 //     takeProfit: '1.082084',
                 //     expiration: '10mins',
                 //   );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
               }
-              return const SizedBox();
+              
+              return const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    color: Colors.green,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 10,
+                  ),
+                  Text(
+                    'Checking Market Conditions',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.lightGreen,
+                    ),
+                  ),
+                ],
+              );
             },
           ),
           const SizedBox(height: 20),
@@ -264,6 +293,7 @@ class SignalCardWidget extends StatelessWidget {
     required this.condition,
     required this.rsi,
     required this.sma,
+    required this.tp,
     required this.currentPrice,
     // required this.openPrice,
     // required this.stopLoss,
@@ -279,6 +309,7 @@ class SignalCardWidget extends StatelessWidget {
   final TradeCondition condition;
   final String rsi;
   final String sma;
+  final String tp;
   final String currentPrice;
 
   @override
@@ -315,6 +346,7 @@ class SignalCardWidget extends StatelessWidget {
                     ],
                   ),
                 ),
+                const Spacer(),
                 RichText(
                   text: TextSpan(
                     style: const TextStyle(
@@ -322,7 +354,7 @@ class SignalCardWidget extends StatelessWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
-                    text: 'Trading Condition: ',
+                    text: 'Condition Met: ',
                     children: [
                       TextSpan(
                         text: condition.toString(),
@@ -336,27 +368,12 @@ class SignalCardWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Spacer(),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    text: 'Symbol: ',
-                    children: [
-                      TextSpan(
-                        text: tradingPair,
-                        style: const TextStyle(
-                          color: Colors.green,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
+            ),
+            const SizedBox(height: 10),
+            SymbolRowWidget(
+              label: 'Symbol',
+              size: 'XAUUSD',
             ),
             const SizedBox(height: 10),
             SymbolRowWidget(
@@ -371,13 +388,19 @@ class SignalCardWidget extends StatelessWidget {
               isHigher: false,
             ),
             const SizedBox(height: 10),
+            SymbolRowWidget(
+              label: 'Take Profit',
+              size: tp,
+              isHigher: false,
+            ),
+            // const SizedBox(height: 10),
             // SymbolRowWidget(
             //   label: 'Take profit',
             //   size: takeProfit,
             //   isHigher: true,
             // ),
             const SizedBox(height: 10),
-            SymbolRowWidget(
+            const SymbolRowWidget(
               label: 'Expiration',
               size: '60 secs',
             ),
