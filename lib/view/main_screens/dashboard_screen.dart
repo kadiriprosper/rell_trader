@@ -38,205 +38,211 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseMainScreen(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(20).copyWith(bottom: 10, left: 14),
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: const Color.fromARGB(255, 24, 111, 27),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Welcome Again,',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                // const Text(
-                //   'Fund account for trading',
-                //   style: TextStyle(
-                //     fontSize: 14,
-                //     color: Colors.white,
-                //   ),
-                // ),
-                const SizedBox(height: 16),
-                CustomMainScreenButton(
-                  buttonColor: Colors.white,
-                  buttonTextColor: const Color.fromARGB(255, 24, 111, 27),
-                  label: 'Get funding for trading',
-                  onPressed: () {},
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // SingleChildScrollView(
-          //   scrollDirection: Axis.horizontal,
-          //   child: SizedBox(
-          //     height: 200,
-          //     width: MediaQuery.of(context).size.width,
-          //     child: LineChart(
-          //       LineChartData(
-          //         backgroundColor: Colors.green,
-          //         borderData: FlBorderData(
-          //           show: false,
-          //         ),
-          //         //TODO: Change this based on the requirements
-          //         minX: 0,
-          //         minY: 0,
-          //         maxX: 10,
-          //         maxY: 10,
-          //         lineBarsData: [
-          //           LineChartBarData(
-          //             spots:
-          //           ),
-          //         ]
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
-          // const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            child: Text(
-              'Daily signals',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20).copyWith(bottom: 10, left: 14),
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: const Color.fromARGB(255, 24, 111, 27),
               ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          //TODO-TEST: Test the stream builder here
-          StreamBuilder(
-            stream: channel.stream,
-            builder: (context, snapshot) {
-              // Future.delayed(
-              //   const Duration(minutes: 1),
-              //   () => channel.sink.add(jsonEncode({"msg": "ping"})),
-              // );
-
-              if (snapshot.hasData) {
-                if (jsonDecode(snapshot.data)['status'] == false && !hasData) {
-                  print({'Current Status': 'False'});
-                } else {
-                  print(snapshot.data);
-
-                  if (jsonDecode(snapshot.data)['status'] == true) {
-                    currentTrade = TradeModel.fromMap(
-                      jsonDecode(snapshot.data),
-                    );
-                    if (tradingSignals.length > 2) {
-                      tradingSignals.removeAt(0);
-                    }
-                    tradingSignals.add(
-                      SignalCardWidget(
-                        tradingPair: tradingPair.first,
-                        condition: currentTrade!.condition,
-                        rsi: currentTrade!.rsi.toStringAsFixed(2),
-                        sma: currentTrade!.sl.toStringAsFixed(2),
-                        tp: currentTrade!.tp.toStringAsFixed(2),
-                        currentPrice:
-                            currentTrade!.currentPrice.toStringAsFixed(2),
-                      ),
-                    );
-                  }
-                  hasData = true;
-                  return ListView.builder(
-                    itemCount: 2,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return tradingSignals[index];
-                    },
-                  );
-                }
-                //   return SignalCardWidget(
-                //     lotSize: '0.01',
-                //     tradingPair: 'XAUUSD',
-                //     openPrice: '1.0234',
-                //     stopLoss: '1.08204',
-                //     takeProfit: '1.082084',
-                //     expiration: '10mins',
-                //   );
-              }
-
-              return const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CircularProgressIndicator(
-                    color: Colors.green,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 10,
-                  ),
-                  Text(
-                    'Checking Market Conditions',
+                  const Text(
+                    'Welcome Again,',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.lightGreen,
+                      color: Colors.white,
                     ),
                   ),
+                  const SizedBox(height: 2),
+                  // const Text(
+                  //   'Fund account for trading',
+                  //   style: TextStyle(
+                  //     fontSize: 14,
+                  //     color: Colors.white,
+                  //   ),
+                  // ),
+                  const SizedBox(height: 16),
+                  CustomMainScreenButton(
+                    buttonColor: Colors.white,
+                    buttonTextColor: const Color.fromARGB(255, 24, 111, 27),
+                    label: 'Get funding for trading',
+                    onPressed: () {},
+                  ),
                 ],
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.all(20).copyWith(bottom: 10, left: 14),
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: const Color.fromARGB(255, 5, 117, 208),
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Upgrade to RellTrader Pro,',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                  ),
+            const SizedBox(height: 16),
+            // SingleChildScrollView(
+            //   scrollDirection: Axis.horizontal,
+            //   child: SizedBox(
+            //     height: 200,
+            //     width: MediaQuery.of(context).size.width,
+            //     child: LineChart(
+            //       LineChartData(
+            //         backgroundColor: Colors.green,
+            //         borderData: FlBorderData(
+            //           show: false,
+            //         ),
+            //         //TODO: Change this based on the requirements
+            //         minX: 0,
+            //         minY: 0,
+            //         maxX: 10,
+            //         maxY: 10,
+            //         lineBarsData: [
+            //           LineChartBarData(
+            //             spots:
+            //           ),
+            //         ]
+            //       ),
+            //     ),
+            //   ),
+            // ),
+
+            // const SizedBox(height: 10),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
+                'Daily signals',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  // 'Unlock advanced features and\nmaximize your trading potential\nwith RellTrader Premium',
-                  'Get 100% monthly profit guaranteed,\n30 days money back also guaranteed.\nTry for free today.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                CustomMainScreenButton(
-                  buttonColor: Colors.white,
-                  buttonTextColor: const Color.fromARGB(255, 5, 117, 208),
-                  label: 'Upgrade now',
-                  onPressed: () {
-                    Get.to(() => const PaymentPage());
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-        ],
+            const SizedBox(height: 20),
+            //TODO-TEST: Test the stream builder here
+            StreamBuilder(
+              stream: channel.stream,
+              builder: (context, snapshot) {
+                // Future.delayed(
+                //   const Duration(minutes: 1),
+                //   () => channel.sink.add(jsonEncode({"msg": "ping"})),
+                // );
+
+                if (snapshot.hasData) {
+                  if (jsonDecode(snapshot.data)['status'] == false &&
+                      !hasData) {
+                    print({'Current Status': 'False'});
+                  } else {
+                    print(snapshot.data);
+
+                    if (jsonDecode(snapshot.data)['status'] == true) {
+                      currentTrade = TradeModel.fromMap(
+                        jsonDecode(snapshot.data),
+                      );
+                      if (tradingSignals.length > 2) {
+                        tradingSignals.removeAt(0);
+                      }
+                      tradingSignals.add(
+                        SignalCardWidget(
+                          tradingPair: tradingPair.first,
+                          condition: currentTrade!.condition,
+                          rsi: currentTrade!.rsi.toStringAsFixed(2),
+                          sma: currentTrade!.sl.toStringAsFixed(2),
+                          tp: currentTrade!.tp.toStringAsFixed(2),
+                          currentPrice:
+                              currentTrade!.currentPrice.toStringAsFixed(2),
+                        ),
+                      );
+                    }
+                    hasData = true;
+                    return ListView.separated(
+                      itemCount: tradingSignals.length,
+                      shrinkWrap: true,
+                      separatorBuilder: (context, index) => const SizedBox(
+                        height: 6,
+                      ),
+                      itemBuilder: (context, index) {
+                        return tradingSignals[index];
+                      },
+                    );
+                  }
+                  //   return SignalCardWidget(
+                  //     lotSize: '0.01',
+                  //     tradingPair: 'XAUUSD',
+                  //     openPrice: '1.0234',
+                  //     stopLoss: '1.08204',
+                  //     takeProfit: '1.082084',
+                  //     expiration: '10mins',
+                  //   );
+                }
+
+                return const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Colors.green,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 10,
+                    ),
+                    Text(
+                      'Checking Market Conditions',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.lightGreen,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            
+            Container(
+              padding: const EdgeInsets.all(20).copyWith(bottom: 10, left: 14),
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: const Color.fromARGB(255, 5, 117, 208),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Upgrade to RellTrader Pro,',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    // 'Unlock advanced features and\nmaximize your trading potential\nwith RellTrader Premium',
+                    'Get 100% monthly profit guaranteed,\n30 days money back also guaranteed.\nTry for free today.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  CustomMainScreenButton(
+                    buttonColor: Colors.white,
+                    buttonTextColor: const Color.fromARGB(255, 5, 117, 208),
+                    label: 'Upgrade now',
+                    onPressed: () {
+                      Get.to(() => const PaymentPage());
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
