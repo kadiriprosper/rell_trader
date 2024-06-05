@@ -138,7 +138,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     currentTrade = TradeModel.fromMap(
                       jsonDecode(snapshot.data),
                     );
-                    tradingSignals.removeAt(0);
+                    if (tradingSignals.length > 2) {
+                      tradingSignals.removeAt(0);
+                    }
                     tradingSignals.add(
                       SignalCardWidget(
                         tradingPair: tradingPair.first,
