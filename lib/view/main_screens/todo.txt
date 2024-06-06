@@ -1,0 +1,5 @@
+1. Change the dashboard page of the application
+2. Put the premium screen on the top of the dashboard screen
+3. overhaul the entire UI design
+4. work on the push notification of the application
+5. Test everything and release it to JEFF
