@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
 import 'package:rell_trader/view/main_screens/main_screen.dart';
 
 const tradingPair = [
@@ -70,7 +71,6 @@ class _AccountSetUpState extends State<AccountSetUpScreen> {
               const Text(
                 'Select Trading Pair',
                 style: TextStyle(
-                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -108,7 +108,6 @@ class _AccountSetUpState extends State<AccountSetUpScreen> {
               const Text(
                 'Select Duration',
                 style: TextStyle(
-                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -145,7 +144,7 @@ class _AccountSetUpState extends State<AccountSetUpScreen> {
               const SizedBox(height: 60),
               MaterialButton(
                 onPressed: () {
-                  Get.to(() => const MainScreen());
+                  Get.to(() => const DashboardScreen());
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -157,7 +156,6 @@ class _AccountSetUpState extends State<AccountSetUpScreen> {
                   'Continue',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
                   ),
                 ),
               ),

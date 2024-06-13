@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1017466194314",
+    "project_id": "signal-3c033",
+    "storage_bucket": "signal-3c033.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017466194314:android:98969f1fa5703149276073",
+        "android_client_info": {
+          "package_name": "com.example.rell_trader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdI5psj6K1OccWTZD_qXWHF8NCgx2lELA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

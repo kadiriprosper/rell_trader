@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/trade_controller.dart';
-import 'package:rell_trader/view/main_screens/profile_screen.dart';
 import 'package:rell_trader/view/main_screens/widgets/base_main_screen.dart';
 import 'package:rell_trader/view/main_screens/widgets/signal_card_widget.dart';
-
-import 'dashboard_screen.dart';
 
 class TradeHistoryScreen extends StatefulWidget {
   const TradeHistoryScreen({super.key});
@@ -26,7 +23,7 @@ class _TradeHistoryScreenState extends State<TradeHistoryScreen> {
     return BaseMainScreen(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Previous Trades'),
+          title: const Text('Latest Signals'),
           automaticallyImplyLeading: false,
         ),
         body: RefreshIndicator(
@@ -74,11 +71,13 @@ class _TradeHistoryScreenState extends State<TradeHistoryScreen> {
                       itemBuilder: (context, index) {
                         final currentTrade =
                             tradeController.tradeHistoryList[index];
-                        return SignalCardWidget(
+                        return FreeSignalCardWidget(
                           tradingPair: currentTrade.symbol,
                           condition: currentTrade.tradeCondition,
                           dateCreated: currentTrade.createdDate,
                           rsi: '',
+                          result: currentTrade.response,
+                          symbol: currentTrade.symbol,
                           sma: currentTrade.stopLoss.toStringAsFixed(2),
                           tp: currentTrade.takeProfit.toStringAsFixed(2),
                           currentPrice: currentTrade.price.toStringAsFixed(2),

@@ -34,7 +34,7 @@ class SymbolRowWidget extends StatelessWidget {
           size,
           style: TextStyle(
             color: isHigher == null
-                ? Colors.black
+                ? Theme.of(context).textTheme.bodyMedium!.color
                 : isHigher == true
                     ? Colors.green
                     : Colors.red,

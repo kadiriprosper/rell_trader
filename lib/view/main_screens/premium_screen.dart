@@ -1,3 +1,167 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+class PremiumScreen extends StatefulWidget {
+  const PremiumScreen({super.key});
+
+  @override
+  State<PremiumScreen> createState() => _PremiumScreenState();
+}
+
+class _PremiumScreenState extends State<PremiumScreen> {
+  final channel = WebSocketChannel.connect(
+    Uri.parse('ws://81.0.249.14:80/ws/check/premium'),
+  );
+
+  @override
+  void initState() {
+    channel.sink.add(jsonEncode({"msg": "ping"}));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Pro Signal'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8).copyWith(top: 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Text(
+                'Pro Signals',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 15),
+              StreamBuilder(
+                stream: channel.stream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (jsonDecode(snapshot.data)['status'] == false) {
+                      return Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.red),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Current Trade Status'),
+                                Text(
+                                  'False',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            const Text('Status Message:'),
+                            Text(
+                              jsonDecode(snapshot.data)['message'],
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    } else {
+                      return Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.green),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Current Trade Status'),
+                                Text(
+                                  'True',
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            const Text('Status Message:'),
+                            Text(
+                              jsonDecode(snapshot.data)['message'],
+                              style: TextStyle(
+                                color: jsonDecode(snapshot.data)['message'] ==
+                                        'loss'
+                                    ? Colors.red
+                                    : Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                  } else {
+                    return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: Colors.green,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 10,
+                        ),
+                        Text(
+                          'Getting Trade Status',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.lightGreen,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
 // import 'dart:convert';
 
 // import 'package:flutter/material.dart';

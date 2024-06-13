@@ -5,8 +5,13 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:rell_trader/controller/main_screen_navigation_controller.dart';
 import 'package:rell_trader/controller/trade_controller.dart';
+import 'package:rell_trader/main.dart';
+import 'package:rell_trader/model/active_trade_model.dart';
+import 'package:rell_trader/model/premium_trade_model.dart';
 import 'package:rell_trader/model/trade_model.dart';
+import 'package:rell_trader/view/main_screens/premium_screen.dart';
 import 'package:rell_trader/view/main_screens/profile_screen.dart';
+import 'package:rell_trader/view/main_screens/widgets/active_trade_widget.dart';
 import 'package:rell_trader/view/main_screens/widgets/base_main_screen.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -22,230 +27,250 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   bool hasData = false;
-  TradeModel? currentTrade;
-  TradeController tradeController = Get.put(TradeController());
-  MainScreenNavigationController mainScreenNavigationController =
-      Get.put(MainScreenNavigationController());
+  PremiumTradeModel? currentTrade;
+  ActiveTradeModel? activeTrade;
+  TradeController tradeController = Get.put(TradeController())
+    ..openConnection();
 
-  final channel = WebSocketChannel.connect(
-    Uri.parse('ws://81.0.249.14:80/ws/check/free'),
-  );
-
-  @override
-  void initState() {
-    channel.sink.add(jsonEncode({"msg": "ping"}));
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    channel.sink.close();
-    super.dispose();
-  }
+  // final channel = WebSocketChannel.connect(
+  //   Uri.parse('ws://81.0.249.14:80/ws/check/free'),
+  // );
 
   @override
   Widget build(BuildContext context) {
-    return BaseMainScreen(
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text('Dashboard'),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.paid),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        //TODO: Make a little animation here from RellTrader to Live Signals
+        title: const Text('Live Signals'),
+        actions: const [
+          RawChip(
+            label: Text(
+              'Pro Mode',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Container(
-                padding:
-                    const EdgeInsets.all(20).copyWith(bottom: 10, left: 14),
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: const Color.fromARGB(255, 24, 111, 27),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Welcome Again,',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    // const Text(
-                    //   'Fund account for trading',
-                    //   style: TextStyle(
-                    //     fontSize: 14,
-                    //     color: Colors.white,
-                    //   ),
-                    // ),
-                    const SizedBox(height: 16),
-                    CustomMainScreenButton(
-                      buttonColor: Colors.white,
-                      buttonTextColor: const Color.fromARGB(255, 24, 111, 27),
-                      label: 'Get funding for trading',
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Signals',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    MaterialButton(
-                      onPressed: () {
-                        mainScreenNavigationController.currentIndex = 1;
-                      },
-                      textColor: Colors.green,
-                      child: const Text('View all'),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              //TODO-TEST: Test the stream builder here
-              StreamBuilder(
-                stream: channel.stream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    if (jsonDecode(snapshot.data)['status'] == false &&
-                        !hasData && tradeController.tradingSignals.isEmpty) {
-                      print({'Current Status': 'False'});
-                    } else {
-                      print(snapshot.data);
+            elevation: 2,
+            shadowColor: Colors.green,
+            avatar: Icon(
+              Icons.paid,
+              color: Colors.orange,
+            ),
+            onPressed: null, //TODO: Separate free from paid later
+            // () {
+            //   // Get.to(() => const PremiumScreen());
+            // },
+          ),
+          SizedBox(width: 12),
+        ],
+      ),
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // const SizedBox(height: 20),
+            // Container(
+            //   padding:
+            //       const EdgeInsets.all(20).copyWith(bottom: 10, left: 14),
+            //   margin: const EdgeInsets.symmetric(horizontal: 12),
+            //   width: double.infinity,
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(12),
+            //     color: const Color.fromARGB(255, 24, 111, 27),
+            //   ),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       const Text(
+            //         'Welcome Again,',
+            //         style: TextStyle(
+            //           fontSize: 18,
+            //           color: Colors.white,
+            //         ),
+            //       ),
+            //       const SizedBox(height: 2),
+            //       const SizedBox(height: 16),
+            //       CustomMainScreenButton(
+            //         buttonColor: Colors.white,
+            //         buttonTextColor: const Color.fromARGB(255, 24, 111, 27),
+            //         label: 'Get funding for trading',
+            //         onPressed: () {},
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // const SizedBox(height: 16),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 12),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       const Text(
+            //         'Signals',
+            //         style: TextStyle(
+            //           fontSize: 16,
+            //           fontWeight: FontWeight.bold,
+            //         ),
+            //       ),
+            //       MaterialButton(
+            //         onPressed: () {
+            //           mainScreenNavigationController.currentIndex = 1;
+            //         },
+            //         textColor: Colors.green,
+            //         child: const Text('View all'),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            const SizedBox(height: 20),
+            StreamBuilder(
+              stream: tradeController.streamController.stream,
+              builder: (context, snapshot) {
+                //Check to see if data is being returned from the channel
+                if (snapshot.hasData) {
+                  // Check to see if the data status is false and
+                  // there has been no data passed from the channel
+                  // and there is no signal in the trade history
+                  if (jsonDecode(snapshot.data)['status'] == false &&
+                      !hasData &&
+                      tradeController.tradingSignals.isEmpty) {
+                    print({'Current Status': 'False'});
+                  } else {
+                    print(snapshot.data);
+                    try {
+                      // Tries to checek the current status returns an active trade
+                      if (jsonDecode(snapshot.data)['message'] ==
+                          'active trade in progress') {
+                        print('started');
+                        print(jsonDecode(snapshot.data)['data']);
+                        // If there is an active trade, parse it into the active trade model
+                        activeTrade = ActiveTradeModel.fromMap(
+                          jsonDecode(snapshot.data)['data'],
+                        );
+                        print('model created');
 
-                      if (jsonDecode(snapshot.data)['status'] == true) {
-                        currentTrade = TradeModel.fromMap(
+                        // Check to see if the signal list is empty
+                        if (tradeController.tradingSignals.isNotEmpty) {
+                          // Create a temporary list and then add the active trade to the top of the list
+                          final tempSignals = [
+                            ActiveTradeWidget(activeTrade: activeTrade),
+                            ...tradeController.tradingSignals,
+                          ];
+                          return Obx(
+                            () => ListView.separated(
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: tempSignals.length,
+                              shrinkWrap: true,
+                              separatorBuilder: (context, index) =>
+                                  const Divider(
+                                height: .1,
+                              ),
+                              //     const SizedBox(
+                              //   height: 6,
+                              // ),
+                              itemBuilder: (context, index) {
+                                return tempSignals[index];
+                              },
+                            ),
+                          );
+                        } else {
+                          // If there are no past trades, return the current active trade
+                          return ActiveTradeWidget(activeTrade: activeTrade);
+                        }
+                      }
+
+                      // Checks to see if the current trade is completed
+                      else if (jsonDecode(snapshot.data)['message'] ==
+                          'Trade completed') {
+                        currentTrade = PremiumTradeModel.fromMap(
                           jsonDecode(snapshot.data),
                         );
-                        if (tradeController.tradingSignals.length > 2) {
-                          tradeController.tradingSignals.removeAt(0);
-                        }
+
+                        // If the trade has been completed, add it to the already exitsting trading signals
                         tradeController.tradingSignals.add(
-                          SignalCardWidget(
+                          PremiumSignalCardWidget(
                             dateCreated:
                                 '${DateFormat(DateFormat.YEAR_MONTH_DAY).format(DateTime.now())}:${DateFormat(DateFormat.HOUR_MINUTE).format(DateTime.now())}',
                             tradingPair: tradingPair.first,
-                            condition: currentTrade!.condition,
-                            rsi: currentTrade!.rsi.toStringAsFixed(2),
-                            sma: currentTrade!.sl.toStringAsFixed(2),
-                            tp: currentTrade!.tp.toStringAsFixed(2),
-                            currentPrice:
-                                currentTrade!.currentPrice.toStringAsFixed(2),
+                            result: currentTrade!.response,
+                            currentPhase: currentTrade!.currentPhase.toString(),
+                            currentStep: currentTrade!.currentPhase.toString(),
+                            lotSize: currentTrade!.lotSize.toStringAsFixed(2),
+                            takeProfit:
+                                currentTrade!.takeProfit.toStringAsFixed(2),
+                            stopLoss: currentTrade!.stopLoss.toStringAsFixed(2),
+                            tradeType: currentTrade!.tradeType,
+                            newAccountBalance: currentTrade!.newAccountBalance
+                                .toStringAsFixed(2),
                           ),
                         );
                       }
-                      hasData = true;
-                      return ListView.separated(
-                        reverse: true,
-                        itemCount: tradeController.tradingSignals.length,
-                        shrinkWrap: true,
-                        separatorBuilder: (context, index) => const SizedBox(
-                          height: 6,
-                        ),
-                        itemBuilder: (context, index) {
-                          return tradeController.tradingSignals[index];
-                        },
-                      );
+                    } catch (e) {
+                      print('error: $e');
                     }
-                    //   return SignalCardWidget(
-                    //     lotSize: '0.01',
-                    //     tradingPair: 'XAUUSD',
-                    //     openPrice: '1.0234',
-                    //     stopLoss: '1.08204',
-                    //     takeProfit: '1.082084',
-                    //     expiration: '10mins',
-                    //   );
                   }
-
-                  return const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        color: Colors.green,
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 10,
-                      ),
-                      Text(
-                        'Checking Market Conditions',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.lightGreen,
+                  // If trading signal is not empty, then present it to the user
+                  if (tradeController.tradingSignals.isNotEmpty) {
+                    return Obx(() => ListView.separated(
+                          itemCount: tradeController.tradingSignals.length,
+                          shrinkWrap: true,
+                          separatorBuilder: (context, index) => const Divider(
+                            height: .1,
+                          ),
+                          itemBuilder: (context, index) {
+                            return tradeController.tradingSignals[index];
+                          },
+                        ));
+                  } else {
+                    return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: Colors.green,
                         ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 10,
+                        ),
+                        Text(
+                          'Checking Market Conditions',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.lightGreen,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                }
+                return const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Colors.green,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 10,
+                    ),
+                    Text(
+                      'Checking Market Conditions',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.lightGreen,
                       ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              // Container(
-              //   padding: const EdgeInsets.all(20).copyWith(bottom: 10, left: 14),
-              //   margin: const EdgeInsets.symmetric(horizontal: 12),
-              //   width: double.infinity,
-              //   decoration: BoxDecoration(
-              //     borderRadius: BorderRadius.circular(12),
-              //     color: const Color.fromARGB(255, 5, 117, 208),
-              //   ),
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       const Text(
-              //         'Upgrade to RellTrader Pro,',
-              //         style: TextStyle(
-              //           fontSize: 12,
-              //           color: Colors.white,
-              //         ),
-              //       ),
-              //       const SizedBox(height: 6),
-              //       const Text(
-              //         // 'Unlock advanced features and\nmaximize your trading potential\nwith RellTrader Premium',
-              //         'Get 100% monthly profit guaranteed,\n30 days money back also guaranteed.\nTry for free today.',
-              //         style: TextStyle(
-              //           fontSize: 14,
-              //           color: Colors.white,
-              //         ),
-              //       ),
-              //       const SizedBox(height: 16),
-              //       CustomMainScreenButton(
-              //         buttonColor: Colors.white,
-              //         buttonTextColor: const Color.fromARGB(255, 5, 117, 208),
-              //         label: 'Upgrade now',
-              //         onPressed: () {
-              //           // Get.to(() => const PaymentPage());
-              //         },
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
-              const SizedBox(height: 20),
-            ],
-          ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 30),
+          ],
         ),
       ),
     );

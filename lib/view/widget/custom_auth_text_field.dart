@@ -31,7 +31,6 @@ class CustomAuthTextField extends StatelessWidget {
           label,
           style: const TextStyle(
             fontWeight: FontWeight.w500,
-            color: Colors.black,
           ),
         ),
         const SizedBox(height: 14),

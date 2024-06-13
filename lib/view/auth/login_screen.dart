@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/view/auth/sign_up_screen.dart';
+import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
 import 'package:rell_trader/view/main_screens/main_screen.dart';
 import 'package:rell_trader/view/widget/custom_auth_text_field.dart';
 
@@ -50,7 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
               const Text(
                 'WELCOME BACK',
                 style: TextStyle(
-                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 26,
                 ),
@@ -149,13 +149,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       loadingWidget: const Center(
                         child: SpinKitWave(
-                          color: Colors.white,
+                          color: Colors.purple,
                           size: 42,
                         ),
                       ),
                     );
                     if (response) {
-                      Get.to(() => const MainScreen());
+                      Get.to(() => const DashboardScreen());
                     } else {
                       Get.snackbar(
                         'Error',
@@ -179,7 +179,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Sign in',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
                   ),
                 ),
               ),
@@ -188,7 +187,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: RichText(
                   text: TextSpan(
                     style: const TextStyle(
-                      color: Colors.black,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),

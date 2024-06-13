@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/view/auth/login_screen.dart';
+import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
+import 'package:rell_trader/view/main_screens/main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,16 +21,28 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-          future: Future.delayed(const Duration(seconds: 3), () async {
-            Get.to(() => const LoginScreen());
-          }),
+          future: () async {
+            const secureStorage = FlutterSecureStorage();
+            if (await secureStorage.read(key: 'email') == null) {
+              Get.to(() => const LoginScreen());
+            } else {
+              final controller = Get.put(UserController());
+
+              final response = await controller.userLogin(
+                email: (await secureStorage.read(key: 'email'))!,
+                password: (await secureStorage.read(key: 'password'))!,
+              );
+              if (response) {
+                Get.to(() => const DashboardScreen());
+              }
+            }
+          }.call(),
           builder: (context, snapshot) {
             return Stack(
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  color: Colors.green,
                 ),
                 const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -36,7 +53,6 @@ class _SplashScreenState extends State<SplashScreen> {
                       'RellTrader.',
                       style: TextStyle(
                         fontSize: 32,
-                        color: Colors.white,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -45,7 +61,6 @@ class _SplashScreenState extends State<SplashScreen> {
                       'For Real Traders',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -56,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   right: 0,
                   left: 0,
                   child: SpinKitRipple(
-                    color: Colors.white,
+                    color: Colors.purple,
                     size: 42,
                   ),
                 )

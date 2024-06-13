@@ -52,7 +52,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const Text(
                 'CREATE AN ACCOUNT',
                 style: TextStyle(
-                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 26,
                 ),
@@ -168,7 +167,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       loadingWidget: const Center(
                         child: SpinKitWave(
-                          color: Colors.white,
+                          color: Colors.purple,
                           size: 42,
                         ),
                       ),
@@ -207,7 +206,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: RichText(
                   text: TextSpan(
                     style: const TextStyle(
-                      color: Colors.black,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
