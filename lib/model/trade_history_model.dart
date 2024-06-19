@@ -1,31 +1,25 @@
 import 'package:intl/intl.dart';
 import 'package:rell_trader/model/trade_model.dart';
 
-class TradeHistoryModel {
+class TradeHistoryModel extends TradeSignalModel {
   TradeHistoryModel({
-    required this.createdAt,
+    required super.createdAt,
     required this.id,
-    required this.response,
-    required this.symbol,
-    required this.stopLoss,
-    required this.takeProfit,
-    required this.price,
-    required this.tradeCondition,
+    required super.response,
+    required super.symbol,
+    required super.stopLoss,
+    required super.takeProfit,
+    required super.openPrice,
+    required super.tradeCondition,
   });
-  String createdAt;
-  String response;
-  String symbol;
-  double stopLoss;
   int id;
-  double takeProfit;
-  double price;
-  TradeCondition tradeCondition;
 
-  get currentTradeCondition =>
-      tradeCondition == TradeCondition.buy ? 'BUY' : 'SELL';
-  String get createdDate {
+  // get currentTradeCondition =>
+  //     tradeCondition == TradeCondition.buy ? 'BUY' : 'SELL';
+  @override
+  String get createdAt {
     try {
-      return '${DateFormat(DateFormat.YEAR_MONTH_DAY).format(DateTime.parse(createdAt))}:${DateFormat(DateFormat.HOUR_MINUTE).format(DateTime.parse(createdAt))}';
+      return '${DateFormat(DateFormat.YEAR_MONTH_DAY).format(DateTime.parse(super.createdAt))}:${DateFormat(DateFormat.HOUR_MINUTE).format(DateTime.parse(super.createdAt))}';
     } catch (_) {
       return 'error';
     }
@@ -39,23 +33,22 @@ class TradeHistoryModel {
       id: data['id'],
       stopLoss: data['stop_loss'],
       takeProfit: data['take_profit'],
-      price: data['price'],
-      tradeCondition:
-          data['type'] == 'SELL' ? TradeCondition.sell : TradeCondition.buy,
+      openPrice: data['price'],
+      tradeCondition: (data['type'] as String).toUpperCase(),
     );
   }
 
   @override
   String toString() {
     return {
-      'Created At': createdDate,
+      'Created At': createdAt,
       'Symbol': symbol,
       'Stop Loss': stopLoss.toStringAsFixed(2),
       'Take Profit': takeProfit.toStringAsFixed(2),
-      'Price': price.toStringAsFixed(2),
+      'Price': openPrice.toStringAsFixed(2),
       'ID': id,
       'Trade Result': response,
-      'Trade Condition': currentTradeCondition,
+      'Trade Condition': tradeCondition,
     }.toString();
   }
 }

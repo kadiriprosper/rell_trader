@@ -6,8 +6,9 @@ import 'package:rell_trader/controller/trade_controller.dart';
 import 'package:rell_trader/firebase_options.dart';
 import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
 import 'package:rell_trader/view/main_screens/main_screen.dart';
-import 'package:rell_trader/view/main_screens/premium_screen.dart';
+import 'package:rell_trader/view/profile_page.dart';
 import 'package:rell_trader/view/splash_screen.dart';
+import 'package:rell_trader/view/trade_details_page.dart';
 
 TradeController tradeController = Get.put(TradeController());
 
@@ -29,9 +30,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
-      home: SplashScreen(),
+      // debugShowCheckedModeBanner: false,
+      home: const SplashScreen(),
     );
   }
 }

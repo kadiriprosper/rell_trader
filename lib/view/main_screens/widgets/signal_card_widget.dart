@@ -30,7 +30,7 @@ class FreeSignalCardWidget extends SignalCardWidget {
   // final String stopLoss;
   // final String takeProfit;
   // final String expiration;
-  final TradeCondition condition;
+  final String condition;
   final String rsi;
   final String sma;
   final String tp;
@@ -49,167 +49,156 @@ class _FreeSignalCardWidget extends State<FreeSignalCardWidget> {
   Widget build(BuildContext context) {
     return Container(
       // margin: const EdgeInsets.symmetric(horizontal: 12),
-      color: const Color.fromARGB(255, 7, 27, 44),
+      // color: const Color.fromARGB(255, 7, 27, 44),
       // elevation: 2,
       // shape: RoundedRectangleBorder(
       //   borderRadius: BorderRadius.circular(12),
       // ),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            isExtended = !isExtended;
-          });
-        },
-        // borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12).copyWith(left: 14),
-          child: isExtended
-              ? Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Created On',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
+      child: Padding(
+        padding: const EdgeInsets.all(12).copyWith(left: 14),
+        child: isExtended
+            ? Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Created On',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
-                        Text(
-                          widget.dateCreated,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Trade Condition',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          widget.condition == TradeCondition.buy
-                              ? 'BUY'
-                              : 'SELL',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: widget.condition == TradeCondition.buy
-                                ? Colors.green
-                                : Colors.red,
-                            fontSize: 12,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Trade Result',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          widget.result!.toUpperCase() == 'PROFIT'
-                              ? 'TAKE PROFIT'
-                              : 'STOP LOSS',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: widget.result!.toUpperCase() == 'LOSS'
-                                ? Colors.red
-                                : Colors.green,
-                            fontSize: 12,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Symbol',
-                      size: widget.symbol ?? 'XAUUSD',
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Open price',
-                      size: widget.currentPrice,
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Stop loss',
-                      size: widget.sma,
-                      isHigher: false,
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Take Profit',
-                      size: widget.tp,
-                      isHigher: true,
-                    ),
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  // crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.tradingPair,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          widget.dateCreated,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      widget.result!.toUpperCase() == 'PROFIT'
-                          ? 'Take Profit'
-                          : 'Stop Loss',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: widget.result!.toUpperCase() == 'PROFIT'
-                            ? Colors.green
-                            : Colors.red,
                       ),
-                    ),
-                    Text(
-                      widget.condition == TradeCondition.buy ? 'BUY' : 'SELL',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: widget.condition == TradeCondition.buy
-                            ? Colors.green
-                            : Colors.red,
+                      Text(
+                        widget.dateCreated,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Trade Condition',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
+                      Text(
+                        widget.condition,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: widget.condition == 'BUY'
+                              ? Colors.green
+                              : Colors.red,
+                          fontSize: 12,
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Trade Result',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        widget.result!.toUpperCase() == 'PROFIT'
+                            ? 'TAKE PROFIT'
+                            : 'STOP LOSS',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: widget.result!.toUpperCase() == 'LOSS'
+                              ? Colors.red
+                              : Colors.green,
+                          fontSize: 12,
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Symbol',
+                    size: widget.symbol ?? 'XAUUSD',
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Open price',
+                    size: widget.currentPrice,
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Stop loss',
+                    size: widget.sma,
+                    isHigher: false,
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Take Profit',
+                    size: widget.tp,
+                    isHigher: true,
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.tradingPair,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        widget.dateCreated,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    widget.result!.toUpperCase() == 'PROFIT'
+                        ? 'Take Profit'
+                        : 'Stop Loss',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: widget.result!.toUpperCase() == 'PROFIT'
+                          ? Colors.green
+                          : Colors.red,
                     ),
-                  ],
-                ),
-        ),
+                  ),
+                  Text(
+                    widget.condition,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color:
+                          widget.condition == 'BUY' ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -261,156 +250,148 @@ class _PremiumSignalCardWidget extends State<PremiumSignalCardWidget> {
   Widget build(BuildContext context) {
     return Container(
       // margin: const EdgeInsets.symmetric(horizontal: 12),
-      color: const Color.fromARGB(255, 7, 27, 44),
+      // color: const Color.fromARGB(255, 7, 27, 44),
       // elevation: 2,
       // shape: RoundedRectangleBorder(
       //   borderRadius: BorderRadius.circular(12),
       // ),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            isExtended = !isExtended;
-          });
-        },
-        // borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12).copyWith(left: 14),
-          child: isExtended
-              ? Column(
-                  children: [
-                    SymbolRowWidget(
-                      label: 'Symbol',
-                      size: widget.tradingPair,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Created On',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
+      child: Padding(
+        padding: const EdgeInsets.all(12).copyWith(left: 14),
+        child: isExtended
+            ? Column(
+                children: [
+                  SymbolRowWidget(
+                    label: 'Symbol',
+                    size: widget.tradingPair,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Created On',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
-                        Text(
-                          widget.dateCreated,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Trade Result',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          widget.result.toUpperCase() == 'PROFIT'
-                              ? 'TAKE PROFIT'
-                              : 'STOP LOSS',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: widget.result == 'loss'
-                                ? Colors.red
-                                : Colors.green,
-                            fontSize: 12,
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Current Phase',
-                      size: widget.currentPhase,
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Current Step',
-                      size: widget.currentStep,
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Lot Size',
-                      size: widget.lotSize,
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Stop loss',
-                      size: widget.stopLoss,
-                      isHigher: false,
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'Take Profit',
-                      size: widget.takeProfit,
-                      isHigher: true,
-                    ),
-                    const SizedBox(height: 10),
-                    SymbolRowWidget(
-                      label: 'New A/C Balance',
-                      size: widget.newAccountBalance,
-                    ),
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.tradingPair,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          widget.dateCreated,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      widget.result.toUpperCase() == 'PROFIT'
-                          ? 'Take Profit'
-                          : 'Stop Loss',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: widget.result.toUpperCase() == 'PROFIT'
-                            ? Colors.green
-                            : Colors.red,
                       ),
-                    ),
-                    Text(widget.lotSize),
-                    Text(
-                      widget.tradeType.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: widget.tradeType.toUpperCase() == 'BUY'
-                            ? Colors.green
-                            : Colors.red,
+                      Text(
+                        widget.dateCreated,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Trade Result',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
+                      Text(
+                        widget.result.toUpperCase() == 'PROFIT'
+                            ? 'TAKE PROFIT'
+                            : 'STOP LOSS',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: widget.result == 'loss'
+                              ? Colors.red
+                              : Colors.green,
+                          fontSize: 12,
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Current Phase',
+                    size: widget.currentPhase,
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Current Step',
+                    size: widget.currentStep,
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Lot Size',
+                    size: widget.lotSize,
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Stop loss',
+                    size: widget.stopLoss,
+                    isHigher: false,
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'Take Profit',
+                    size: widget.takeProfit,
+                    isHigher: true,
+                  ),
+                  const SizedBox(height: 10),
+                  SymbolRowWidget(
+                    label: 'New A/C Balance',
+                    size: widget.newAccountBalance,
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.tradingPair,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        widget.dateCreated,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    widget.result.toUpperCase() == 'PROFIT'
+                        ? 'Take Profit'
+                        : 'Stop Loss',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: widget.result.toUpperCase() == 'PROFIT'
+                          ? Colors.green
+                          : Colors.red,
                     ),
-                  ],
-                ),
-        ),
+                  ),
+                  Text(widget.lotSize),
+                  Text(
+                    widget.tradeType.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: widget.tradeType.toUpperCase() == 'BUY'
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }

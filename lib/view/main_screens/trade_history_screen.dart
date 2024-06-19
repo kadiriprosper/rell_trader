@@ -74,13 +74,14 @@ class _TradeHistoryScreenState extends State<TradeHistoryScreen> {
                         return FreeSignalCardWidget(
                           tradingPair: currentTrade.symbol,
                           condition: currentTrade.tradeCondition,
-                          dateCreated: currentTrade.createdDate,
+                          dateCreated: currentTrade.createdAt,
                           rsi: '',
                           result: currentTrade.response,
                           symbol: currentTrade.symbol,
                           sma: currentTrade.stopLoss.toStringAsFixed(2),
                           tp: currentTrade.takeProfit.toStringAsFixed(2),
-                          currentPrice: currentTrade.price.toStringAsFixed(2),
+                          currentPrice:
+                              currentTrade.openPrice.toStringAsFixed(2),
                         );
                       },
                     );

@@ -1,4 +1,0 @@
-1. Change the dashboard page of the application -- done
-2. Put the premium screen on the top of the dashboard screen -- done
-3. overhaul the entire UI design -- pending completion and test
-4. work on the push notification of the application -- pending test
