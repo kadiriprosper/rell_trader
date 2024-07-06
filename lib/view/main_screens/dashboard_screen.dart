@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/trade_controller.dart';
+import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/model/active_trade_model.dart';
-import 'package:rell_trader/model/trade_model.dart';
+import 'package:rell_trader/view/main_screens/meta_trader_account_page.dart';
 import 'package:rell_trader/view/main_screens/widgets/active_trade_widget.dart';
 import 'package:rell_trader/view/profile_page.dart';
 import 'package:rell_trader/view/trade_details_page.dart';
@@ -18,9 +19,10 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   bool hasData = false;
   // PremiumTradeModel? currentTrade;
-  ActiveTradeModel? activeTrade;
-  TradeController tradeController = Get.put(TradeController())
-    ..openConnection();
+  List<ActiveTradeModel> tempActiveTradeList = [];
+  late ActiveTradeModel activeTrade;
+  TradeController tradeController = Get.put(TradeController());
+  // ..openConnection();
 
   // final channel = WebSocketChannel.connect(
   //   Uri.parse('ws://81.0.249.14:80/ws/check/free'),
@@ -53,7 +55,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           //   // },
           // ),
           InkWell(
-            onTap: () {
+            onTap: () async {
+              UserController userController = Get.put(UserController());
+              await userController.getUserDetails();
               Get.to(
                 () => const ProfilePage(),
               );
@@ -72,13 +76,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // const SizedBox(height: 20),
             StreamBuilder(
-              stream: tradeController.streamController.stream,
+              stream: Stream.periodic(const Duration(
+                  seconds: 1)), //tradeController.streamController.stream,
               builder: (context, snapshot) {
                 //Check to see if data is being returned from the channel
                 if (snapshot.hasData) {
@@ -93,38 +98,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     print(snapshot.data);
                     try {
                       // Tries to checek the current status returns an active trade
+                      bool tradeExists = false;
                       if (jsonDecode(snapshot.data)['message'] ==
                           'active trade in progress') {
-                        print('started');
-                        print(jsonDecode(snapshot.data)['data']);
+                        // print(jsonDecode(snapshot.data)['data']);
                         // If there is an active trade, parse it into the active trade model
+
+                        //TODO: This is where i am curremtly  working in
                         activeTrade = ActiveTradeModel.fromMap(
                           jsonDecode(snapshot.data)['data'],
                         );
-                        final List<TradeSignalModel> tempTradeModel = [
-                          ActiveTradeModel.fromMap(
-                            jsonDecode(snapshot.data)['data'],
-                          ),
+
+                        //TODO: We would still have to check for whether the trade is finished
+                        for (int i = 0; i < tempActiveTradeList.length; i++) {
+                          if (tempActiveTradeList[i].compareTo(activeTrade)) {
+                            tempActiveTradeList[i] = activeTrade;
+                            tradeExists = true;
+                          }
+                        }
+                        if (!tradeExists) {
+                          tempActiveTradeList.add(activeTrade);
+                        }
+                        tradeController.tempTradeModel = [
+                          ...tempActiveTradeList,
                           ...tradeController.tradingSignalModels
-                        ];
-                        // .insert(
-                        //   0,
-                        //   ActiveTradeModel.fromMap(
-                        //     jsonDecode(snapshot.data)['data'],
-                        //   ),
-                        // );
-                        print('model created');
+                        ].obs;
+
+                        tradeExists = false;
 
                         // Check to see if the signal list is empty
                         if (tradeController.tradingSignals.isNotEmpty) {
                           // Create a temporary list and then add the active trade to the top of the list
                           final tempSignals = [
-                            ActiveTradeWidget(activeTrade: activeTrade),
+                            ...List.generate(
+                              tempActiveTradeList.length,
+                              (index) => ActiveTradeWidget(
+                                activeTrade: tempActiveTradeList[index],
+                              ),
+                            ),
+                            // ActiveTradeWidget(activeTrade: activeTrade),
                             ...tradeController.tradingSignals,
                           ];
+
                           return Obx(
                             () => ListView.separated(
-                              physics: NeverScrollableScrollPhysics(),
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: tempSignals.length,
                               shrinkWrap: true,
                               separatorBuilder: (context, index) =>
@@ -137,9 +155,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
-                                    print('Hello WOrls;');
-                                    tradeController.currentSelectedSignal =
-                                        tempTradeModel[index].obs;
+                                    tradeController
+                                        .currentSelectedTradeModelIndex = index;
                                     // tradeController
                                     //     .tradingSignalModels[index];
                                     Get.to(() => const TradeDetailsPage());
@@ -191,7 +208,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   if (tradeController.tradingSignals.isNotEmpty) {
                     return Obx(
                       () => ListView.separated(
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: tradeController.tradingSignals.length,
                         shrinkWrap: true,
                         separatorBuilder: (context, index) => const Divider(
@@ -202,7 +219,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               onTap: () {
                                 print('Hello WOrls;');
                                 tradeController.currentSelectedSignal =
-                                    tradeController.tradingSignalModels[index].obs;
+                                    tradeController
+                                        .tradingSignalModels[index].obs;
                                 Get.to(() => const TradeDetailsPage());
                               },
                               child: tradeController.tradingSignals[index]);

@@ -2,11 +2,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/main_screen_navigation_controller.dart';
 import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
-import 'package:rell_trader/view/main_screens/main_screen.dart';
 import 'package:http/http.dart' as http;
 
-const notificationRegistrationAPI =
-    'http://81.0.249.14:80/notif/register_notification/';
+// const notificationRegistrationAPI =
+//     'http://81.0.249.14:80/notif/register_notification/';
+
+const tempNotificationRegistrationUrl =
+    'https://strangely-cheerful-lion.ngrok-free.app/notif/register_notification/';
 
 class PushNotificationController extends GetxController {
   //Creates an instance of the firebase messaging application
@@ -15,20 +17,28 @@ class PushNotificationController extends GetxController {
       Get.put(MainScreenNavigationController());
 
   //function to init notifications
-  Future<void> initNotifications() async {
+  Future<void> initNotifications({required String authToken}) async {
     await firebaseMessaging.requestPermission();
     final fMToken = await firebaseMessaging.getToken();
     http.Response? response;
     try {
-      response = await http.post(Uri.parse(notificationRegistrationAPI), body: {
-        "vapid_id": fMToken,
-        "type": "android",
-      });
+      response = await http.post(
+        Uri.parse(tempNotificationRegistrationUrl),
+        body: {
+          "token": fMToken,
+          "type": "android",
+        },
+        headers: {
+          'Authorization': authToken,
+        },
+
+      );
+      print('token: $fMToken');
       print(response.body);
     } catch (e) {
       print(e);
     }
-    print('token: $fMToken');
+    
   }
 
   Future<void> handleNotification(RemoteMessage? message) async {
@@ -36,6 +46,7 @@ class PushNotificationController extends GetxController {
       return;
     } else {
       Get.to(() => const DashboardScreen());
+   
     }
   }
 

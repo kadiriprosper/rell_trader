@@ -5,7 +5,7 @@ class CustomAuthTextField extends StatelessWidget {
     super.key,
     required this.textController,
     required this.hintText,
-    required this.label,
+    this.label,
     required this.prefixIcon,
     required this.validater,
     required this.textInputType,
@@ -15,7 +15,7 @@ class CustomAuthTextField extends StatelessWidget {
 
   final TextEditingController textController;
   final String hintText;
-  final String label;
+  final String? label;
   final Icon prefixIcon;
   final String? Function(String?) validater;
   final TextInputType textInputType;
@@ -27,13 +27,16 @@ class CustomAuthTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 14),
+        label != null
+            ? Text(
+                label!,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
+              )
+            : const SizedBox(),
+        const SizedBox(height: 10),
         TextFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           obscureText: obscureText != null ? obscureText! : false,
@@ -50,11 +53,11 @@ class CustomAuthTextField extends StatelessWidget {
             suffixIcon: obscureText != null
                 ? obscureText!
                     ? IconButton(
-                        icon: const Icon(Icons.remove_red_eye_outlined),
+                        icon: const Icon(Icons.visibility_outlined),
                         onPressed: onSuffixIconClick,
                       )
                     : IconButton(
-                        icon: const Icon(Icons.energy_savings_leaf_outlined),
+                        icon: const Icon(Icons.visibility_off_outlined),
                         onPressed: onSuffixIconClick,
                       )
                 : null,

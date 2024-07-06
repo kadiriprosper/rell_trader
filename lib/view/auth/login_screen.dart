@@ -1,12 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/view/auth/sign_up_screen.dart';
 import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
-import 'package:rell_trader/view/main_screens/main_screen.dart';
 import 'package:rell_trader/view/widget/custom_auth_text_field.dart';
 
 class LoginScreen extends StatefulWidget {

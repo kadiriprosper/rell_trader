@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rell_trader/model/trade_model.dart';
 import 'package:rell_trader/view/main_screens/widgets/symbol_row_widget.dart';
 
 abstract class SignalCardWidget extends StatefulWidget {

@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/view/auth/login_screen.dart';
 import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
-import 'package:rell_trader/view/main_screens/main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,7 +21,12 @@ class _SplashScreenState extends State<SplashScreen> {
           future: () async {
             const secureStorage = FlutterSecureStorage();
             if (await secureStorage.read(key: 'email') == null) {
-              Get.to(() => const LoginScreen());
+              Get.offUntil(
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+                (route) => false,
+              );
             } else {
               final controller = Get.put(UserController());
 
@@ -33,14 +35,19 @@ class _SplashScreenState extends State<SplashScreen> {
                 password: (await secureStorage.read(key: 'password'))!,
               );
               if (response) {
-                Get.to(() => const DashboardScreen());
+                Get.offUntil(
+                  MaterialPageRoute(
+                    builder: (context) => const DashboardScreen(),
+                  ),
+                  (route) => false,
+                );
               }
             }
           }.call(),
           builder: (context, snapshot) {
             return Stack(
               children: [
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                 ),

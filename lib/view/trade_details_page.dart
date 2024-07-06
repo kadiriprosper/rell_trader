@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/trade_controller.dart';
 import 'package:rell_trader/model/active_trade_model.dart';
-import 'package:rell_trader/model/premium_trade_model.dart';
 import 'package:rell_trader/model/trade_history_model.dart';
 import 'package:rell_trader/model/trade_model.dart';
 
@@ -13,7 +12,7 @@ class TradeDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final TradeController tradeController = Get.put(TradeController());
     TradeSignalModel currentSelectedTrade =
-        tradeController.currentSelectedSignal.value;
+        tradeController.tempTradeModel[tradeController.currentSelectedTradeModelIndex];
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -23,10 +22,10 @@ class TradeDetailsPage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        shadowColor: tradeController.currentSelectedSignal is ActiveTradeModel
+        shadowColor: currentSelectedTrade is ActiveTradeModel
             ? Colors.grey
-            : tradeController.currentSelectedSignal is TradeHistoryModel
-                ? (tradeController.currentSelectedSignal as TradeHistoryModel)
+            : currentSelectedTrade is TradeHistoryModel
+                ? (currentSelectedTrade)
                             .response
                             .toUpperCase() ==
                         'PROFIT'

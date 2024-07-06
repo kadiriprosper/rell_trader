@@ -38,4 +38,15 @@ class ActiveTradeModel extends TradeSignalModel {
       currentPrice: data['curent_price'],
     );
   }
+
+  bool compareTo(ActiveTradeModel other) {
+    if (openPrice == other.openPrice &&
+        symbol == other.symbol &&
+        stopLoss == other.stopLoss &&
+        tradeCondition == other.tradeCondition &&
+        takeProfit == other.takeProfit) {
+      return true;
+    }
+    return false;
+  }
 }

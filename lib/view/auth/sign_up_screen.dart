@@ -4,7 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/view/auth/login_screen.dart';
-import 'package:rell_trader/view/main_screens/account_set_up.dart';
+import 'package:rell_trader/view/main_screens/meta_trader_account_page.dart';
 import 'package:rell_trader/view/widget/custom_auth_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -16,7 +16,8 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailController = TextEditingController();
-  TextEditingController fullNameController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool obscureText = true;
@@ -85,13 +86,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Column(
                   children: [
                     CustomAuthTextField(
-                      textController: fullNameController,
-                      hintText: 'enter your name',
+                      textController: firstNameController,
+                      hintText: 'enter your first name',
                       textInputType: TextInputType.name,
-                      label: 'Full Name',
-                      prefixIcon: const Icon(Icons.email_outlined),
+                      label: 'First Name',
+                      prefixIcon: const Icon(Icons.person),
                       validater: (value) {
-                        if (value != null && value.length > 3) {
+                        if (value != null && value.length >= 2) {
+                          return null;
+                        }
+                        return 'Enter valid name';
+                      },
+                    ),
+                    const SizedBox(height: 14),
+                    CustomAuthTextField(
+                      textController: lastNameController,
+                      hintText: 'enter your last name',
+                      textInputType: TextInputType.name,
+                      label: 'Last Name',
+                      prefixIcon: const Icon(Icons.person),
+                      validater: (value) {
+                        if (value != null && value.length >= 2) {
                           return null;
                         }
                         return 'Enter valid name';
@@ -160,10 +175,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   UserController userController = Get.put(UserController());
                   if (formKey.currentState?.validate() == true) {
                     bool response = await Get.showOverlay(
-                      asyncFunction: () async => userController.userSignUp(
+                      asyncFunction: () async => await userController.userSignUp(
                         email: emailController.text,
                         password: passwordController.text,
-                        fullName: fullNameController.text,
+                        firstName: firstNameController.text,
+                        lastName: lastNameController.text,
                       ),
                       loadingWidget: const Center(
                         child: SpinKitWave(
@@ -173,7 +189,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     );
                     if (response) {
-                      Get.to(() => const AccountSetUpScreen());
+                      Get.offUntil(
+                        MaterialPageRoute(
+                          builder: (context) => const MetaTraderAccountPage(
+                              fromAccountSetup: true),
+                        ),
+                        (route) => false,
+                      );
                     } else {
                       Get.snackbar(
                         'Error',

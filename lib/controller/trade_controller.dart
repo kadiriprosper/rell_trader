@@ -3,18 +3,24 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/model/trade_history_model.dart';
 import 'package:rell_trader/model/trade_model.dart';
 import 'package:rell_trader/view/main_screens/widgets/signal_card_widget.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
-const String tradeHistoryApi = 'http://81.0.249.14:80/trade/history/';
-const String freeSignalApi = 'ws://81.0.249.14:80/ws/check/free';
+const String serverUrl = 'https://strangely-cheerful-lion.ngrok-free.app';
+
+const String tradeHistoryApi = '$serverUrl/trade/history/';
+// const String freeSignalApi = 'ws://81.0.249.14:80/ws/check/free';
 
 class TradeController extends GetxController {
   RxList<TradeHistoryModel> tradeHistoryList = <TradeHistoryModel>[].obs;
   RxList<SignalCardWidget> tradingSignals = <SignalCardWidget>[].obs;
   RxList<TradeSignalModel> tradingSignalModels = <TradeSignalModel>[].obs;
+
+  RxList<TradeSignalModel> tempTradeModel = <TradeSignalModel>[].obs;
+  int currentSelectedTradeModelIndex = 0;
+
   late Rx<TradeSignalModel> currentSelectedSignal;
 
   // set currentSelectedSignal(TradeSignalModel currentModel) =>
@@ -24,13 +30,20 @@ class TradeController extends GetxController {
 
   late StreamController streamController;
 
-  void openConnection() {
-    final channel = WebSocketChannel.connect(
-      Uri.parse('ws://81.0.249.14:80/ws/check/premium'),
-    );
-    channel.sink.add(jsonEncode({"msg": "ping"}));
-    streamController = StreamController.broadcast()..addStream(channel.stream);
-  }
+  //TODO: Uncomment this later
+
+  // void openConnection() {
+  //   try {
+  //     final channel = WebSocketChannel.connect(
+  //       Uri.parse('ws://81.0.249.14:80/ws/check/premium'),
+  //     );
+  //     channel.sink.add(jsonEncode({"msg": "ping"}));
+  //     streamController = StreamController.broadcast()
+  //       ..addStream(channel.stream);
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   void onInit() async {
@@ -73,9 +86,14 @@ class TradeController extends GetxController {
   }
 
   Future<bool> getTradeHistory() async {
+    //TODO: Refactor this code so we can decouple the usage of UserController here
+    UserController userController = Get.put(UserController());
     try {
       http.Response response = await http.get(
         Uri.parse(tradeHistoryApi),
+        headers: {
+          'Authorization': userController.token,
+        },
       );
       Map<String, dynamic> totalHistory = jsonDecode(response.body);
       if (tradeHistoryList.isNotEmpty) {
