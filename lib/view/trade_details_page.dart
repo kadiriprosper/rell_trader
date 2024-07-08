@@ -11,8 +11,8 @@ class TradeDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TradeController tradeController = Get.put(TradeController());
-    TradeSignalModel currentSelectedTrade =
-        tradeController.tempTradeModel[tradeController.currentSelectedTradeModelIndex];
+    TradeSignalModel currentSelectedTrade = tradeController
+        .tempTradeModel[tradeController.currentSelectedTradeModelIndex];
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -25,10 +25,7 @@ class TradeDetailsPage extends StatelessWidget {
         shadowColor: currentSelectedTrade is ActiveTradeModel
             ? Colors.grey
             : currentSelectedTrade is TradeHistoryModel
-                ? (currentSelectedTrade)
-                            .response
-                            .toUpperCase() ==
-                        'PROFIT'
+                ? (currentSelectedTrade).response.toUpperCase() == 'PROFIT'
                     ? Colors.green
                     : Colors.red
                 : Colors.grey,
@@ -105,21 +102,27 @@ class TradeDetailsPage extends StatelessWidget {
                 labelFontWeight: FontWeight.w400,
                 body: currentSelectedTrade.openPrice.toStringAsFixed(2),
               ),
-              // tradeController.currentSelectedSignal.value is ActiveTradeModel
+              // currentSelectedTrade is ActiveTradeModel
               //     ? Column(
               //         crossAxisAlignment: CrossAxisAlignment.start,
               //         children: [
               //           const SizedBox(height: 10),
-              //           Obx(() =>  TradeDetailsRowWidget(
-              //             label: 'Currnet Price',
-              //             labelColor: Colors.grey,
-              //             bodyColor: Colors.grey,
-              //             fontSize: 16,
-              //             bodyFontWeight: FontWeight.w400,
-              //             labelFontWeight: FontWeight.w400,
-              //             body: (tradeController.currentSelectedSignal.value as ActiveTradeModel).currentPrice
-              //                 .toStringAsFixed(2),
-              //           ),),
+              //           Obx(
+              //             () => TradeDetailsRowWidget(
+              //               label: 'Current Price',
+              //               labelColor: Colors.grey,
+              //               bodyColor: Colors.grey,
+              //               fontSize: 16,
+              //               bodyFontWeight: FontWeight.w400,
+              //               labelFontWeight: FontWeight.w400,
+              //               body: (tradeController.tempTradeModel[
+              //                           tradeController
+              //                               .currentSelectedTradeModelIndex]
+              //                       as ActiveTradeModel)
+              //                   .currentPrice
+              //                   .toStringAsFixed(2),
+              //             ),
+              //           ),
               //         ],
               //       )
               //     : const SizedBox(),

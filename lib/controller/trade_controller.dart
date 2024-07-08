@@ -7,11 +7,12 @@ import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/model/trade_history_model.dart';
 import 'package:rell_trader/model/trade_model.dart';
 import 'package:rell_trader/view/main_screens/widgets/signal_card_widget.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
-const String serverUrl = 'https://strangely-cheerful-lion.ngrok-free.app';
+const String serverUrl = String.fromEnvironment('baseUrl');
 
+const String webSocketUrl = String.fromEnvironment('webSocket');
 const String tradeHistoryApi = '$serverUrl/trade/history/';
-// const String freeSignalApi = 'ws://81.0.249.14:80/ws/check/free';
 
 class TradeController extends GetxController {
   RxList<TradeHistoryModel> tradeHistoryList = <TradeHistoryModel>[].obs;
@@ -30,20 +31,18 @@ class TradeController extends GetxController {
 
   late StreamController streamController;
 
-  //TODO: Uncomment this later
-
-  // void openConnection() {
-  //   try {
-  //     final channel = WebSocketChannel.connect(
-  //       Uri.parse('ws://81.0.249.14:80/ws/check/premium'),
-  //     );
-  //     channel.sink.add(jsonEncode({"msg": "ping"}));
-  //     streamController = StreamController.broadcast()
-  //       ..addStream(channel.stream);
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+  void openConnection() {
+    try {
+      final channel = WebSocketChannel.connect(
+        Uri.parse(webSocketUrl),
+      );
+      channel.sink.add(jsonEncode({"msg": "ping"}));
+      streamController = StreamController.broadcast()
+        ..addStream(channel.stream);
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   void onInit() async {
@@ -52,6 +51,7 @@ class TradeController extends GetxController {
   }
 
   Future<void> initTradingSignals() async {
+    
     //TODO: Test this guy
     if (tradingSignals.isNotEmpty) {
       tradingSignals.clear();
@@ -124,11 +124,4 @@ class TradeController extends GetxController {
     }
     return false;
   }
-
-  // Rx<double> _selectedMaximumRisk = 1.45.obs;
-  // double get selectedMaximumRisk => _selectedMaximumRisk.value;
-
-  // set selectedMaximumRisk(double maxRisk) {
-  //   _selectedMaximumRisk.value = maxRisk;
-  // }
 }

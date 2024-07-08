@@ -21,8 +21,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // PremiumTradeModel? currentTrade;
   List<ActiveTradeModel> tempActiveTradeList = [];
   late ActiveTradeModel activeTrade;
-  TradeController tradeController = Get.put(TradeController());
-  // ..openConnection();
+  TradeController tradeController = Get.put(TradeController())
+    ..openConnection();
 
   // final channel = WebSocketChannel.connect(
   //   Uri.parse('ws://81.0.249.14:80/ws/check/free'),
@@ -36,24 +36,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         //TODO: Make a little animation here from RellTrader to Live Signals
         title: const Text('Live Signals'),
         actions: [
-          // RawChip(
-          //   label: Text(
-          //     'Pro Mode',
-          //     style: TextStyle(
-          //       fontWeight: FontWeight.bold,
-          //     ),
-          //   ),
-          //   elevation: 2,
-          //   shadowColor: Colors.green,
-          //   avatar: Icon(
-          //     Icons.paid,
-          //     color: Colors.orange,
-          //   ),
-          //   onPressed: null, //TODO: Separate free from paid later
-          //   // () {
-          //   //   // Get.to(() => const PremiumScreen());
-          //   // },
-          // ),
           InkWell(
             onTap: () async {
               UserController userController = Get.put(UserController());
@@ -62,8 +44,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 () => const ProfilePage(),
               );
             },
+            borderRadius: BorderRadius.circular(30),
             child: const CircleAvatar(
               radius: 22,
+              
               backgroundColor: Colors.green,
               child: CircleAvatar(
                 radius: 21,
@@ -82,8 +66,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             // const SizedBox(height: 20),
             StreamBuilder(
-              stream: Stream.periodic(const Duration(
-                  seconds: 1)), //tradeController.streamController.stream,
+              stream: tradeController.streamController.stream,
               builder: (context, snapshot) {
                 //Check to see if data is being returned from the channel
                 if (snapshot.hasData) {
@@ -217,7 +200,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         itemBuilder: (context, index) {
                           return InkWell(
                               onTap: () {
-                                print('Hello WOrls;');
                                 tradeController.currentSelectedSignal =
                                     tradeController
                                         .tradingSignalModels[index].obs;
@@ -249,6 +231,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     );
                   }
+                } else if (tradeController.tradingSignals.isNotEmpty) {
+                  tradeController.tempTradeModel =
+                      tradeController.tradingSignalModels;
+                  return Obx(
+                    () => ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: tradeController.tradingSignals.length,
+                      shrinkWrap: true,
+                      separatorBuilder: (context, index) => const Divider(
+                        height: .1,
+                      ),
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                            onTap: () {
+                              tradeController.currentSelectedTradeModelIndex =
+                                  index;
+                              // tradeController.currentSelectedSignal =
+                              //     tradeController
+                              //         .tradingSignalModels[index].obs;
+                              Get.to(() => const TradeDetailsPage());
+                            },
+                            child: tradeController.tradingSignals[index]);
+                      },
+                    ),
+                  );
                 }
                 return const Column(
                   mainAxisAlignment: MainAxisAlignment.center,

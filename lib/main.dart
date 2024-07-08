@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/trade_controller.dart';
 import 'package:rell_trader/firebase_options.dart';
-import 'package:rell_trader/view/profile_page.dart';
 import 'package:rell_trader/view/splash_screen.dart';
 
 TradeController tradeController = Get.put(TradeController());

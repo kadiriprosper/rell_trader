@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/user_controller.dart';
-import 'package:rell_trader/view/main_screens/widgets/custom_main_screen_button.dart';
 import 'package:rell_trader/view/widget/custom_auth_text_field.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -39,7 +38,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    //TODO: Get the first name from the usercontroller
                     Expanded(
                       child: Text(
                         userController.currentUser.firstName,
@@ -54,7 +52,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        //TODO: Call a bottom sheet to change the user details
                         await Get.bottomSheet(
                           const ProfileUpdateBottomSheet(),
                         );
@@ -67,7 +64,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              //TODO: Get the details from the controller
               ProfileSegmentWidget(
                 segmentLabel: 'Basic Details',
                 children: [
@@ -145,7 +141,6 @@ class _ProfileUpdateBottomSheetState extends State<ProfileUpdateBottomSheet> {
   void initState() {
     firstNameController.text = userController.currentUser.firstName;
     lastNameController.text = userController.currentUser.lastName;
-    // TODO: init all the controllers here
     super.initState();
   }
 
@@ -176,7 +171,6 @@ class _ProfileUpdateBottomSheetState extends State<ProfileUpdateBottomSheet> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                //TODO: Change the hint texts to the existing user's name
                 CustomAuthTextField(
                   textController: firstNameController,
                   hintText: 'First Name',

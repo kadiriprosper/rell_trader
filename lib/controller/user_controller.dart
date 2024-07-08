@@ -16,8 +16,7 @@ import 'package:rell_trader/view/main_screens/meta_trader_account_page.dart';
 
 //TODO: Remember to change this back
 
-const String serverUrl = 'https://strangely-cheerful-lion.ngrok-free.app';
-
+const String serverUrl = String.fromEnvironment('baseUrl');
 const String loginUrl = '$serverUrl/auth/login/';
 const String registrationUrl = '$serverUrl/auth/register/';
 const String mt5ConnectionUrl = '$serverUrl/auth/connect/';

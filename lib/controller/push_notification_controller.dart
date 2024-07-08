@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 //     'http://81.0.249.14:80/notif/register_notification/';
 
 const tempNotificationRegistrationUrl =
-    'https://strangely-cheerful-lion.ngrok-free.app/notif/register_notification/';
+    'http://86.48.6.77/notif/register_notification/';
 
 class PushNotificationController extends GetxController {
   //Creates an instance of the firebase messaging application
@@ -31,14 +31,12 @@ class PushNotificationController extends GetxController {
         headers: {
           'Authorization': authToken,
         },
-
       );
       print('token: $fMToken');
       print(response.body);
     } catch (e) {
       print(e);
     }
-    
   }
 
   Future<void> handleNotification(RemoteMessage? message) async {
@@ -46,7 +44,6 @@ class PushNotificationController extends GetxController {
       return;
     } else {
       Get.to(() => const DashboardScreen());
-   
     }
   }
 
