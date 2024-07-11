@@ -4,7 +4,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/view/auth/login_screen.dart';
-import 'package:rell_trader/view/main_screens/meta_trader_account_page.dart';
 import 'package:rell_trader/view/widget/custom_auth_text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -189,13 +188,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     );
                     if (response) {
-                      Get.offUntil(
-                        MaterialPageRoute(
-                          builder: (context) => const MetaTraderAccountPage(
-                              fromAccountSetup: true),
-                        ),
-                        (route) => false,
-                      );
+                      // Get.offUntil(
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const MetaTraderAccountPage(
+                      //         fromAccountSetup: true),
+                      //   ),
+                      //   (route) => false,
+                      // );
                     } else {
                       Get.snackbar(
                         'Error',

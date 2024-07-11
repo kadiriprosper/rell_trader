@@ -3,45 +3,42 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/model/trade_history_model.dart';
 import 'package:rell_trader/model/trade_model.dart';
 import 'package:rell_trader/view/main_screens/widgets/signal_card_widget.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 const String serverUrl = String.fromEnvironment('baseUrl');
 
 const String webSocketUrl = String.fromEnvironment('webSocket');
 const String tradeHistoryApi = '$serverUrl/trade/history/';
 
+///This Controller Class holds all the logic for initializing, receiving, parsing and passing
+///the trade signals from one screen to the other.
 class TradeController extends GetxController {
-  RxList<TradeHistoryModel> tradeHistoryList = <TradeHistoryModel>[].obs;
   RxList<SignalCardWidget> tradingSignals = <SignalCardWidget>[].obs;
-  RxList<TradeSignalModel> tradingSignalModels = <TradeSignalModel>[].obs;
 
+  RxList<TradeHistoryModel> tradeHistoryList = <TradeHistoryModel>[].obs;
+  RxList<TradeSignalModel> tradingSignalModels = <TradeSignalModel>[].obs;
   RxList<TradeSignalModel> tempTradeModel = <TradeSignalModel>[].obs;
+
   int currentSelectedTradeModelIndex = 0;
 
   late Rx<TradeSignalModel> currentSelectedSignal;
 
-  // set currentSelectedSignal(TradeSignalModel currentModel) =>
-  //     _currentSelectedSignal = currentModel.obs;
+  late Stream streamController;
 
-  // TradeSignalModel get currentSelectedSignal => _currentSelectedSignal.value;
-
-  late StreamController streamController;
-
+  ///Launches the connection to the web socket api
   void openConnection() {
     try {
       final channel = WebSocketChannel.connect(
         Uri.parse(webSocketUrl),
       );
       channel.sink.add(jsonEncode({"msg": "ping"}));
-      streamController = StreamController.broadcast()
-        ..addStream(channel.stream);
-    } catch (e) {
-      print(e);
-    }
+      streamController = channel.stream;
+    } catch (_) {}
   }
 
   @override
@@ -50,16 +47,18 @@ class TradeController extends GetxController {
     super.onInit();
   }
 
+  ///Initializes all the trading signals
   Future<void> initTradingSignals() async {
-    
-    //TODO: Test this guy
+    //Clears [tradingSignals] if its not empty so as not to have duplicate data
     if (tradingSignals.isNotEmpty) {
       tradingSignals.clear();
     }
     tradingSignalModels.clear();
+
     await getTradeHistory();
     int i = 0;
     if (tradeHistoryList.isNotEmpty) {
+      // Creates a trade card widget and then stores it in the trading signals
       while (i < tradeHistoryList.length) {
         final currentTrade = tradeHistoryList[i];
 
@@ -81,12 +80,15 @@ class TradeController extends GetxController {
     }
   }
 
+  /// Adds [signalCardWidget] to [tradingSignals] list
   void addTradingSignal(SignalCardWidget signalCardWidget) {
     tradingSignals.add(signalCardWidget);
   }
 
+  /// Calls the [tradeHistoryApi] and gets all the trade history available
+  ///
+  /// Adds this history to the [tradeHistoryList]
   Future<bool> getTradeHistory() async {
-    //TODO: Refactor this code so we can decouple the usage of UserController here
     UserController userController = Get.put(UserController());
     try {
       http.Response response = await http.get(
@@ -102,9 +104,9 @@ class TradeController extends GetxController {
       }
       if (totalHistory['status'] == 200) {
         int i = 0;
-        print('Getting First Data');
-        print(totalHistory['data']);
-        print('First Data Gotten');
+        // print('Getting First Data');
+        // print(totalHistory['data']);
+        // print('First Data Gotten');
         while (i < (totalHistory['data'] as List).length) {
           tradeHistoryList.add(
             TradeHistoryModel.fromMap(totalHistory['data'][i]),
@@ -115,7 +117,7 @@ class TradeController extends GetxController {
           i++;
         }
       }
-      print(tradeHistoryList);
+      // print(tradeHistoryList);
       return true;
     } on http.ClientException catch (e) {
       print(e);

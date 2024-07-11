@@ -113,6 +113,20 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ],
               ),
+              const SizedBox(height: 30),
+              MaterialButton(
+                onPressed: () async {
+                  await userController.userLogout();
+                },
+                minWidth: MediaQuery.of(context).size.width,
+                height: 60,
+                textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                color: Colors.red,
+                child: const Text('Logout'),
+              ),
             ],
           ),
         ),

@@ -4,17 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+
 import 'package:rell_trader/controller/push_notification_controller.dart';
 import 'package:rell_trader/model/user_model.dart';
+import 'package:rell_trader/view/auth/login_screen.dart';
 import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
 import 'package:rell_trader/view/main_screens/meta_trader_account_page.dart';
-
-//TODO: Carry all the api to env file
-
-// const String loginURL = 'http://81.0.249.14/auth/login/';
-// const String registerURL = 'http://81.0.249.14/auth/register/';
-
-//TODO: Remember to change this back
 
 const String serverUrl = String.fromEnvironment('baseUrl');
 const String loginUrl = '$serverUrl/auth/login/';
@@ -29,6 +24,32 @@ class UserController extends GetxController {
   final secureStorage = const FlutterSecureStorage();
 
   String token = '';
+
+  Future<void> userLogout() async {
+
+    // Delete all the user's details from storage
+    secureStorage.delete(key: 'email');
+    secureStorage.delete(key: 'password');
+
+    //Make token and current user empty
+    token = '';
+    currentUser = UserModel(
+      email: '',
+      firstName: '',
+      lastName: '',
+    );
+
+    
+    PushNotificationController().revokeNotification();
+
+    //Go to the login screen
+    Get.offUntil(
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+      (route) => false,
+    );
+  }
 
   Future<bool> userLogin({
     required String email,
@@ -45,20 +66,20 @@ class UserController extends GetxController {
       );
       print(response.body);
       if (response.statusCode == 200) {
-        // currentUser = UserModel.fromMap(
-        //   jsonDecode(response.body),
-        // );
-        //TODO: save the user details for auto login
+        //Saves the user details for auto login using the package FlutterSecureStorage
         secureStorage.write(key: 'email', value: email);
         secureStorage.write(key: 'password', value: password);
+
+        //Gets the token from the api response and stores it in the controller
         token = jsonDecode(response.body)['token'];
-        print('tokn: $token');
-        //TODO: Find a better place to put this guy
+
         await getUserDetails();
-        PushNotificationController pushNotificationController =
-            Get.put(PushNotificationController());
-        await pushNotificationController.initNotifications(authToken: token);
+        
+        await PushNotificationController().initNotifications(authToken: token);
+
+        //If the current account number for the user is null, then the user has not linked their mt5 account
         if (currentUser.accountNumber == null) {
+          //Go to the account linking page
           Get.offUntil(
             MaterialPageRoute(
               builder: (context) =>
@@ -67,6 +88,7 @@ class UserController extends GetxController {
             (route) => false,
           );
         } else {
+          // If the user has linked the account, go to the dashboard screen
           Get.offUntil(
             MaterialPageRoute(
               builder: (context) => const DashboardScreen(),
@@ -102,6 +124,7 @@ class UserController extends GetxController {
       });
 
       if (response.statusCode >= 200 && response.statusCode < 205) {
+        //If the registration is successful, go on to login the user
         return await userLogin(email: email, password: password);
       } else {
         print(jsonDecode(response.body)['detail']);
@@ -157,11 +180,11 @@ class UserController extends GetxController {
         },
       );
       if (response.statusCode >= 200 && response.statusCode < 205) {
-        print(response.body);
+        
+        // Once the user details is gotten from the server, then store the current user's details
         currentUser = UserModel.fromMap(
           jsonDecode(response.body),
         );
-        print(response.body);
         return true;
       } else {
         print(jsonDecode(response.body));

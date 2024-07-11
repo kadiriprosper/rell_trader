@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/trade_controller.dart';
-import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/model/active_trade_model.dart';
-import 'package:rell_trader/view/main_screens/meta_trader_account_page.dart';
 import 'package:rell_trader/view/main_screens/widgets/active_trade_widget.dart';
 import 'package:rell_trader/view/profile_page.dart';
 import 'package:rell_trader/view/trade_details_page.dart';
@@ -24,33 +22,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
   TradeController tradeController = Get.put(TradeController())
     ..openConnection();
 
-  // final channel = WebSocketChannel.connect(
-  //   Uri.parse('ws://81.0.249.14:80/ws/check/free'),
-  // );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        //TODO: Make a little animation here from RellTrader to Live Signals
         title: const Text('Live Signals'),
         actions: [
           InkWell(
             onTap: () async {
-              UserController userController = Get.put(UserController());
-              await userController.getUserDetails();
               Get.to(
                 () => const ProfilePage(),
               );
             },
             borderRadius: BorderRadius.circular(30),
             child: const CircleAvatar(
-              radius: 22,
-              
-              backgroundColor: Colors.green,
+              radius: 20,
+              backgroundColor: Colors.blue,
               child: CircleAvatar(
-                radius: 21,
+                radius: 18,
                 backgroundColor: Colors.white70,
                 child: Icon(Icons.person_outline),
               ),
@@ -66,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             // const SizedBox(height: 20),
             StreamBuilder(
-              stream: tradeController.streamController.stream,
+              stream: tradeController.streamController,
               builder: (context, snapshot) {
                 //Check to see if data is being returned from the channel
                 if (snapshot.hasData) {
@@ -85,9 +75,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       if (jsonDecode(snapshot.data)['message'] ==
                           'active trade in progress') {
                         // print(jsonDecode(snapshot.data)['data']);
-                        // If there is an active trade, parse it into the active trade model
 
-                        //TODO: This is where i am curremtly  working in
+                        // If there is an active trade, parse it into the active trade model
                         activeTrade = ActiveTradeModel.fromMap(
                           jsonDecode(snapshot.data)['data'],
                         );
@@ -158,30 +147,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       // Checks to see if the current trade is completed
                       else if (jsonDecode(snapshot.data)['message'] ==
                           'Trade completed') {
-                        //TODO: Test this guy
                         tradeController.initTradingSignals();
-                        // currentTrade = PremiumTradeModel.fromMap(
-                        //   jsonDecode(snapshot.data),
-                        // );
-
-                        // // If the trade has been completed, add it to the already exitsting trading signals
-                        // tradeController.tradingSignals.add(
-                        //   PremiumSignalCardWidget(
-                        //     dateCreated:
-                        //         '${DateFormat(DateFormat.YEAR_MONTH_DAY).format(DateTime.now())}:${DateFormat(DateFormat.HOUR_MINUTE).format(DateTime.now())}',
-                        //     tradingPair: tradingPair.first,
-                        //     result: currentTrade!.response,
-                        //     currentPhase: currentTrade!.currentPhase.toString(),
-                        //     currentStep: currentTrade!.currentPhase.toString(),
-                        //     lotSize: currentTrade!.lotSize.toStringAsFixed(2),
-                        //     takeProfit:
-                        //         currentTrade!.takeProfit.toStringAsFixed(2),
-                        //     stopLoss: currentTrade!.stopLoss.toStringAsFixed(2),
-                        //     tradeType: currentTrade!.tradeType,
-                        //     newAccountBalance: currentTrade!.newAccountBalance
-                        //         .toStringAsFixed(2),
-                        //   ),
-                        // );
                       }
                     } catch (e) {
                       print('error: $e');
@@ -189,6 +155,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   }
                   // If trading signal is not empty, then present it to the user
                   if (tradeController.tradingSignals.isNotEmpty) {
+                    tradeController.tempTradeModel =
+                        tradeController.tradingSignalModels;
                     return Obx(
                       () => ListView.separated(
                         physics: const NeverScrollableScrollPhysics(),

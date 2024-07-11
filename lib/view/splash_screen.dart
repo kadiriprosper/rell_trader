@@ -4,7 +4,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/user_controller.dart';
 import 'package:rell_trader/view/auth/login_screen.dart';
-import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,18 +29,18 @@ class _SplashScreenState extends State<SplashScreen> {
             } else {
               final controller = Get.put(UserController());
 
-              final response = await controller.userLogin(
+              await controller.userLogin(
                 email: (await secureStorage.read(key: 'email'))!,
                 password: (await secureStorage.read(key: 'password'))!,
               );
-              if (response) {
-                Get.offUntil(
-                  MaterialPageRoute(
-                    builder: (context) => const DashboardScreen(),
-                  ),
-                  (route) => false,
-                );
-              }
+              // if (response) {
+              //   Get.offUntil(
+              //     MaterialPageRoute(
+              //       builder: (context) => const DashboardScreen(),
+              //     ),
+              //     (route) => false,
+              //   );
+              // }
             }
           }.call(),
           builder: (context, snapshot) {
