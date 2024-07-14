@@ -37,10 +37,9 @@ class UserController extends GetxController {
       email: '',
       firstName: '',
       lastName: '',
-    );
+    ); 
 
-    
-    PushNotificationController().revokeNotification();
+    await PushNotificationController().revokeNotification();
 
     //Go to the login screen
     Get.offUntil(
