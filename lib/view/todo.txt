@@ -1,2 +1,1 @@
-"baseUrl" : "http://86.48.6.77",
-    "webSocket":"ws://86.48.6.77/ws/check/premium/?eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZXhwIjoxNzIyOTg3NDU5LCJpYXQiOjE3MjAzOTU0NTl9.Tb3rxp7BCSalwDxffeK7v5QRMGxWkH6u-Re7I3NGQbE"
+
