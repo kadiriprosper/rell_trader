@@ -1,1 +1,3 @@
-
+Add the app signing key
+Change the app icon
+set the app ID for the application
