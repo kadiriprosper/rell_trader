@@ -17,73 +17,74 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-          future: () async {
-            const secureStorage = FlutterSecureStorage();
-            if (await secureStorage.read(key: 'email') == null) {
-              Get.offUntil(
-                MaterialPageRoute(
-                  builder: (context) => const LoginScreen(),
-                ),
-                (route) => false,
-              );
-            } else {
-              final controller = Get.put(UserController());
-
-              await controller.userLogin(
-                email: (await secureStorage.read(key: 'email'))!,
-                password: (await secureStorage.read(key: 'password'))!,
-              );
-              // if (response) {
-              //   Get.offUntil(
-              //     MaterialPageRoute(
-              //       builder: (context) => const DashboardScreen(),
-              //     ),
-              //     (route) => false,
-              //   );
-              // }
-            }
-          }.call(),
-          builder: (context, snapshot) {
-            return Stack(
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                ),
-                const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(width: double.infinity),
-                    Text(
-                      'RellTrader.',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'For Real Traders',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const Positioned(
-                  bottom: 30,
-                  right: 0,
-                  left: 0,
-                  child: SpinKitRipple(
-                    color: Colors.purple,
-                    size: 42,
-                  ),
-                )
-              ],
+        future: () async {
+          const secureStorage = FlutterSecureStorage();
+          if (await secureStorage.read(key: 'email') == null) {
+            Get.offUntil(
+              MaterialPageRoute(
+                builder: (context) => const LoginScreen(),
+              ),
+              (route) => false,
             );
-          }),
+          } else {
+            final controller = Get.put(UserController());
+
+            await controller.userLogin(
+              email: (await secureStorage.read(key: 'email'))!,
+              password: (await secureStorage.read(key: 'password'))!,
+            );
+            // if (response) {
+            //   Get.offUntil(
+            //     MaterialPageRoute(
+            //       builder: (context) => const DashboardScreen(),
+            //     ),
+            //     (route) => false,
+            //   );
+            // }
+          }
+        }.call(),
+        builder: (context, snapshot) {
+          return Stack(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+              ),
+              const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(width: double.infinity),
+                  Text(
+                    'RellTrader.',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'For Real Traders',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              const Positioned(
+                bottom: 30,
+                right: 0,
+                left: 0,
+                child: SpinKitRipple(
+                  color: Colors.purple,
+                  size: 42,
+                ),
+              )
+            ],
+          );
+        },
+      ),
     );
   }
 }

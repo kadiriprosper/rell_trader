@@ -1,4 +1,6 @@
+import 'package:device_information/device_information.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -7,6 +9,14 @@ import 'package:rell_trader/view/main_screens/dashboard_screen.dart';
 
 const tempNotificationRegistrationUrl =
     '$serverUrl/notif/register_notification/';
+
+Future<String> deviceInfo() async {
+  try {
+    return '${await DeviceInformation.platformVersion}-${await DeviceInformation.deviceModel}-${await DeviceInformation.deviceName}';
+  } catch (e) {
+    return 'error $e';
+  }
+}
 
 class PushNotificationController extends GetxController {
   //Creates an instance of the firebase messaging application
@@ -27,7 +37,10 @@ class PushNotificationController extends GetxController {
         Uri.parse(tempNotificationRegistrationUrl),
         body: {
           "token": fMToken,
-          "type": "android",
+          "type": defaultTargetPlatform == TargetPlatform.android
+              ? "android"
+              : 'iOS',
+          "device_id": await deviceInfo(),
         },
         headers: {
           'Authorization': authToken,
