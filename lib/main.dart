@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:rell_trader/controller/trade_controller.dart';
 import 'package:rell_trader/firebase_options.dart';

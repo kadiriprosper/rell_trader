@@ -18,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  
 
   bool obscureText = true;
   late TapGestureRecognizer onTapCreateAccount;
@@ -34,6 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
     onTapCreateAccount.dispose();
     super.dispose();
   }

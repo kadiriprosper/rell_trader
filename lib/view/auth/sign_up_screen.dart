@@ -35,6 +35,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    confirmPasswordController.dispose();
     onTapLogin.dispose();
     super.dispose();
   }
@@ -174,7 +179,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   UserController userController = Get.put(UserController());
                   if (formKey.currentState?.validate() == true) {
                     bool response = await Get.showOverlay(
-                      asyncFunction: () async => await userController.userSignUp(
+                      asyncFunction: () async =>
+                          await userController.userSignUp(
                         email: emailController.text,
                         password: passwordController.text,
                         firstName: firstNameController.text,

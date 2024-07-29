@@ -27,6 +27,16 @@ class _MetaTraderAccountPageState extends State<MetaTraderAccountPage> {
   List<String> tradingPair = [
     'XAUUSD',
   ];
+
+  @override
+  void dispose() {
+    accountNumberController.dispose();
+    passwordController.dispose();
+    selectedPairController.dispose();
+    selectedServerController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
